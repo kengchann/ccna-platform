@@ -1,0 +1,113 @@
+// Question bank storage. Mirrors the importer's canonical model
+// (importer/src/qbank_importer/model/): content blocks, interactions, and
+// issues are stored as JSONB in exactly the bundle's JSON shape — the
+// importer's `qbank-import schema` command exports the JSON Schemas that
+// define those shapes. Relational columns exist for what the platform
+// queries on (type, ordinal, review status); the faithful content itself is
+// never decomposed further, so nothing is lost between bundle and database.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model QuestionBank {
+  id         String          @id @default(uuid())
+  name       String
+  createdAt  DateTime        @default(now())
+  questions  Question[]
+  groups     QuestionGroup[]
+  assets     Asset[]
+  importJobs ImportJob[]
+}
+
+enum QuestionType {
+  SINGLE_CHOICE
+  MULTIPLE_CHOICE
+  TRUE_FALSE
+  DRAG_AND_DROP
+  MATCHING
+  ORDERING
+  FILL_IN_BLANK
+  SCENARIO
+  CASE_STUDY
+}
+
+enum GroupKind {
+  SCENARIO
+  CASE_STUDY
+}
+
+model QuestionGroup {
+  id        String       @id // group id from the bundle
+  bank      QuestionBank @relation(fields: [bankId], references: [id])
+  bankId    String
+  kind      GroupKind
+  title     String?
+  context   Json // ContentBlock[]
+  questions Question[]
+
+  @@index([bankId])
+}
+
+model Question {
+  id          String         @id // question id from the bundle
+  bank        QuestionBank   @relation(fields: [bankId], references: [id])
+  bankId      String
+  group       QuestionGroup? @relation(fields: [groupId], references: [id])
+  groupId     String?
+  ordinal     Int // 1-based position in the source document
+  sourceLabel String? // question label exactly as printed
+  sourcePages Int[]
+  type        QuestionType
+  stem        Json // ContentBlock[]
+  interaction Json // Interaction (discriminated by "kind")
+  explanation Json? // ContentBlock[]
+  needsReview Boolean        @default(false)
+  issues      Json? // Issue[] from the import report
+
+  @@unique([bankId, ordinal])
+  @@index([bankId, needsReview])
+}
+
+enum AssetKind {
+  EMBEDDED
+  PAGE_CROP
+}
+
+model Asset {
+  id         String       @id // asset id from the bundle
+  bank       QuestionBank @relation(fields: [bankId], references: [id])
+  bankId     String
+  kind       AssetKind
+  mediaType  String
+  sha256     String
+  storageKey String // where the original bytes live (object storage / disk)
+  sourcePage Int
+  sourceBbox Json? // [x0, y0, x1, y1] in PDF points, when known
+
+  @@index([bankId])
+}
+
+enum ImportJobStatus {
+  COMPLETED
+  COMPLETED_WITH_ISSUES
+  FAILED
+}
+
+model ImportJob {
+  id             String          @id @default(uuid())
+  bank           QuestionBank    @relation(fields: [bankId], references: [id])
+  bankId         String
+  sourceFilename String
+  sourceSha256   String
+  status         ImportJobStatus
+  report         Json // ImportReport from the bundle
+  createdAt      DateTime        @default(now())
+
+  @@index([bankId])
+}

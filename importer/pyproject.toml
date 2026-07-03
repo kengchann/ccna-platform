@@ -1,0 +1,33 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "qbank-importer"
+version = "0.1.0"
+description = "Question Bank Import Engine: converts source documents (PDF first) into canonical import bundles"
+requires-python = ">=3.11"
+dependencies = [
+    "pydantic>=2.7",
+    "pymupdf>=1.24",
+    "typer>=0.12",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8",
+    "ruff>=0.5",
+]
+
+[project.scripts]
+qbank-import = "qbank_importer.cli:app"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+
+[tool.ruff]
+line-length = 100
+src = ["src", "tests"]
