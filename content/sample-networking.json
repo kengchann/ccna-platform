@@ -1,0 +1,76 @@
+{
+  "bank": "Networking Fundamentals (sample)",
+  "questions": [
+    {
+      "type": "single_choice",
+      "label": "1",
+      "stem": [{"text": "How many usable host addresses are available in a /29 IPv4 subnet?"}],
+      "options": [
+        {"id": "a", "text": "4"},
+        {"id": "b", "text": "6", "correct": true},
+        {"id": "c", "text": "8"},
+        {"id": "d", "text": "14"}
+      ],
+      "explanation": [{"text": "A /29 has 2^3 = 8 addresses; subtracting the network and broadcast addresses leaves 6 usable hosts."}]
+    },
+    {
+      "type": "multiple_choice",
+      "label": "2",
+      "stem": [{"text": "Which two of the following are private IPv4 address ranges? (Choose two.)"}],
+      "options": [
+        {"id": "a", "text": "10.0.0.0/8", "correct": true},
+        {"id": "b", "text": "172.32.0.0/12"},
+        {"id": "c", "text": "192.168.0.0/16", "correct": true},
+        {"id": "d", "text": "8.8.0.0/16"}
+      ],
+      "explanation": [{"text": "RFC 1918 defines 10.0.0.0/8, 172.16.0.0/12, and 192.168.0.0/16 as private ranges."}]
+    },
+    {
+      "type": "true_false",
+      "label": "3",
+      "stem": [{"text": "The default administrative distance of a directly connected interface is 0."}],
+      "options": [
+        {"id": "a", "text": "True", "correct": true},
+        {"id": "b", "text": "False"}
+      ],
+      "explanation": [{"text": "A directly connected route has an administrative distance of 0, the most trusted value."}]
+    },
+    {
+      "type": "single_choice",
+      "label": "4",
+      "stem": [
+        {"text": "Refer to the output. Which route will the router use to forward a packet destined for 10.1.1.55?"},
+        {"cli": "R1# show ip route\nGateway of last resort is not set\n\n      10.0.0.0/8 is variably subnetted, 3 subnets, 3 masks\nC        10.1.1.0/24 is directly connected, GigabitEthernet0/0\nO        10.1.1.0/26 [110/2] via 10.4.4.1, GigabitEthernet0/1\nS        10.1.1.0/28 [1/0] via 10.5.5.1"}
+      ],
+      "options": [
+        {"id": "a", "text": "10.1.1.0/24, because it is directly connected"},
+        {"id": "b", "text": "10.1.1.0/26 via OSPF"},
+        {"id": "c", "text": "10.1.1.0/28, because it is the longest prefix match", "correct": true},
+        {"id": "d", "text": "The packet is dropped; no gateway of last resort is set"}
+      ],
+      "explanation": [{"text": "Routers select the most specific (longest prefix) matching route. 10.1.1.55 falls within 10.1.1.48-63 for the /28, which is the longest match among the three."}]
+    },
+    {
+      "type": "fill_in_blank",
+      "label": "5",
+      "stem": [{"text": "The IOS command to save the running configuration to NVRAM is 'copy running-config ____________'."}],
+      "blanks": [
+        {"id": "b1", "accepted": ["startup-config", "startup config"]}
+      ],
+      "explanation": [{"text": "'copy running-config startup-config' writes the active config to NVRAM so it survives a reload."}]
+    },
+    {
+      "type": "ordering",
+      "label": "6",
+      "stem": [{"text": "Place the stages of the TCP three-way handshake and connection setup in the order they occur."}],
+      "items": [
+        {"id": "syn", "text": "Client sends SYN"},
+        {"id": "synack", "text": "Server replies with SYN-ACK"},
+        {"id": "ack", "text": "Client sends ACK"},
+        {"id": "data", "text": "Data transfer begins"}
+      ],
+      "correct_order": ["syn", "synack", "ack", "data"],
+      "explanation": [{"text": "TCP establishes a connection with SYN, SYN-ACK, ACK before any data is exchanged."}]
+    }
+  ]
+}

@@ -1,0 +1,44 @@
+{
+  "started_at": "2026-07-03T16:30:45.278734Z",
+  "finished_at": "2026-07-03T16:30:45.283348Z",
+  "source_filename": "sample-networking.json",
+  "results": [
+    {
+      "ordinal": 1,
+      "question_id": "q1",
+      "status": "imported",
+      "issues": []
+    },
+    {
+      "ordinal": 2,
+      "question_id": "q2",
+      "status": "imported",
+      "issues": []
+    },
+    {
+      "ordinal": 3,
+      "question_id": "q3",
+      "status": "imported",
+      "issues": []
+    },
+    {
+      "ordinal": 4,
+      "question_id": "q4",
+      "status": "imported",
+      "issues": []
+    },
+    {
+      "ordinal": 5,
+      "question_id": "q5",
+      "status": "imported",
+      "issues": []
+    },
+    {
+      "ordinal": 6,
+      "question_id": "q6",
+      "status": "imported",
+      "issues": []
+    }
+  ],
+  "run_issues": []
+}

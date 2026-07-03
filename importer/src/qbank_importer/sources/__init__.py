@@ -18,11 +18,13 @@ from .base import (
     FailedQuestion,
     ImportSource,
 )
+from .json import JsonImportSource
 from .pdf import PdfImportSource
 
 #: format_name -> (file suffixes, source class)
 _SOURCES: dict[str, tuple[tuple[str, ...], type[ImportSource]]] = {
     PdfImportSource.format_name: ((".pdf",), PdfImportSource),
+    JsonImportSource.format_name: ((".json",), JsonImportSource),
 }
 
 
@@ -57,6 +59,7 @@ __all__ = [
     "ExtractedQuestion",
     "FailedQuestion",
     "ImportSource",
+    "JsonImportSource",
     "PdfImportSource",
     "open_source",
 ]

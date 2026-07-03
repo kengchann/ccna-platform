@@ -1,0 +1,15 @@
+{
+  "bundle_format_version": "1.0",
+  "importer_version": "0.1.0",
+  "created_at": "2026-07-03T16:30:45.283348Z",
+  "source": {
+    "format": "json",
+    "filename": "sample-networking.json",
+    "sha256": "58247629537028ef31fada40646ebeb9bbb07cb17287cb2991d2f0d35ce6e957",
+    "size_bytes": 3554,
+    "page_count": null
+  },
+  "question_count": 6,
+  "group_count": 0,
+  "asset_count": 0
+}

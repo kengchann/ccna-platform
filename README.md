@@ -48,10 +48,15 @@ qbank-import --help
 
 ### Web app (Node 20+)
 
+The quiz UI reads an import bundle from disk (`apps/web/content/bundle`), so no
+database is needed to try it. A sample bundle is checked in; regenerate it from
+the sample content with `qbank-import json content/sample-networking.json --out
+apps/web/content/bundle`.
+
 ```
 cd apps/web
 npm install
-npm run dev
+npm run dev        # http://localhost:3000
 ```
 
 ## Status
@@ -61,6 +66,9 @@ npm run dev
 - [x] Pipeline stages: Input → Parser → Normalizer → Validator → Preview → Import
 - [x] Modular validation framework (independent rules, `validation/rules/`)
 - [x] Preview + ImportResult structures, CLI (`pdf`, `preview`, `schema`)
-- [x] PDF extraction (`sources/pdf/`) — heuristics in `PdfParserConfig`, to be tuned against the canonical PDF
-- [ ] Bundle ingestion endpoint in the web app
+- [x] PDF extraction (`sources/pdf/`) — heuristics in `PdfParserConfig`, to be tuned against a canonical PDF
+- [x] JSON authoring source (`sources/json/`) — recommended way to author owned content ([docs](docs/authoring-format.md))
+- [x] Web quiz UI (file-backed) — loads a bundle, interactive questions, verbatim CLI, grading, explanations
+- [ ] Bundle ingestion into PostgreSQL (production path; UI currently reads bundles from disk)
 - [ ] Admin review UI for flagged questions
+- [ ] Interactive widgets for matching / drag-and-drop in the quiz UI

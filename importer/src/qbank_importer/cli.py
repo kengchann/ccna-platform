@@ -65,6 +65,25 @@ def pdf(
         raise typer.Exit(code=2)
 
 
+@app.command(name="json")
+def json_(
+    source_file: Path = typer.Argument(..., exists=True, dir_okay=False, readable=True),
+    out: Path = typer.Option(..., "--out", "-o", help="Bundle output directory (must be empty)"),
+) -> None:
+    """Import a hand-authored JSON question bank into a staged bundle."""
+    try:
+        source = open_source(source_file, format_name="json")
+        outcome = run_import(source, out)
+    except ImporterError as exc:
+        typer.secho(f"error: {exc}", fg=typer.colors.RED, err=True)
+        raise typer.Exit(code=1)
+
+    typer.echo(f"bundle written to {out}")
+    _print_result(outcome.result)
+    if outcome.result.questions_skipped:
+        raise typer.Exit(code=2)
+
+
 @app.command()
 def preview(
     bundle_dir: Path = typer.Argument(..., exists=True, file_okay=False),
