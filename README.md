@@ -61,6 +61,6 @@ npm run dev
 - [x] Pipeline stages: Input → Parser → Normalizer → Validator → Preview → Import
 - [x] Modular validation framework (independent rules, `validation/rules/`)
 - [x] Preview + ImportResult structures, CLI (`pdf`, `preview`, `schema`)
-- [ ] PDF extraction implementation (`importer/src/qbank_importer/sources/pdf/`)
+- [x] PDF extraction (`sources/pdf/`) — heuristics in `PdfParserConfig`, to be tuned against the canonical PDF
 - [ ] Bundle ingestion endpoint in the web app
 - [ ] Admin review UI for flagged questions

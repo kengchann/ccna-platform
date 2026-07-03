@@ -150,31 +150,45 @@ JSONL keeps both writing and ingestion streaming-friendly for large banks.
 `BundleWriter` (importer) and `BundleReader` (importer tests today, ingestion
 tooling tomorrow) are the only components that know this layout.
 
-## PDF source — planned decomposition
+## PDF source
 
-`sources/pdf/` is scaffolded but intentionally not implemented yet. The
-planned stages, each independently testable:
+`sources/pdf/` implements four stages, one module each:
 
-1. **Page extraction** (PyMuPDF): text spans with coordinates/fonts, embedded
-   image xrefs, vector drawing regions — raw, lossless, per page.
-2. **Question segmentation**: split the page stream into per-question slices
-   using the document's question labels/layout. Multi-page questions and
-   scenario headers are handled here.
-3. **Block classification**: within a slice, classify runs as prose vs
-   verbatim (monospace font / layout cues) vs figure region vs table.
-4. **Assembly**: build `Question` objects + `Asset` payloads (extract embedded
-   images by xref; crop vector figure regions at high DPI), emit issues for
-   anything uncertain.
+1. **Page extraction** (`layout.py`, PyMuPDF): text spans with
+   coordinates/fonts, embedded image placements by xref, vector-drawing
+   clusters (figure regions), and ruled tables — raw and lossless, one page
+   at a time.
+2. **Question segmentation** (`segment.py`): split the page stream into
+   question/group slices on the document's printed labels. Slices span pages;
+   images and tables are assigned to slices by vertical position. Memory is
+   bounded by one page plus the open slice.
+3. **Block classification** (`classify.py` + `blocks.py`): a state machine
+   routes each slice's flow into stem, options, answer key, and explanation.
+   Monospace runs become VerbatimBlocks whose indentation and intra-line gaps
+   are reconstructed exactly from glyph coordinates.
+4. **Assembly** (`assemble.py`): build `Question` objects and `AssetPayload`s.
+   Embedded images are extracted as their original stored bytes; vector
+   figures are cropped from the exact page region at high DPI (recorded with
+   an INFO issue). Scenario/case-study members are buffered briefly so the
+   `ExtractedGroup` is emitted before them, per the source contract.
 
-Heuristics in stages 2–3 must be developed against the real canonical PDF, so
-they are stubs until that document is available to test against.
+Every layout convention — question-label patterns, option/answer/explanation
+markers, monospace font hints, figure-size thresholds, crop DPI — lives in
+`config.py` (`PdfParserConfig`). **The defaults encode common question-bank
+conventions and must be tuned against the canonical PDF**; tuning is a config
+change, not a code change. Anything the parser cannot classify confidently is
+imported anyway and flagged (`no_options_detected`, `unparsed_answer_key`,
+`preamble_skipped`, ...), and a per-slice failure yields a `FailedQuestion`
+while the run continues.
 
 ## Testing strategy
 
 - Model and bundle round-trip tests use minimal synthetic structures (clearly
   fake strings, not sample exam content) — they test serialization and
   invariants, not parsing.
-- PDF stage tests (future) will use small fixture PDFs generated in-test plus
-  excerpts of the real document, asserting byte-exact text and asset output.
+- PDF stage tests use small fixture PDFs generated in-test with PyMuPDF
+  (`tests/test_pdf_source.py`), asserting exact text — including CLI
+  indentation — and asset extraction. Excerpts of the real document join
+  these once it is available.
 - The pipeline is testable with an in-memory fake `ImportSource`; no PDF or
   database required.
